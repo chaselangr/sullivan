@@ -800,9 +800,113 @@ if ( ! function_exists( 'sullivan_woo_cart_modal' ) ) {
 			</div>
 
 			<div class="cart-modal modal arrow-right diva">
+                <div class="cart-dropdown">
+                    <?php if ( ! WC()->cart->is_empty() ) : ?>
+                        <ul>
+                            <?php foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) :
+                                $_product   = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+                                $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
 
-				<div class="widget_shopping_cart_content"></div>
+                                if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_widget_cart_item_visible', true, $cart_item, $cart_item_key ) ) :
+                                    $product_name  = apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
+                                    $thumbnail     = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
+                                    $product_price = apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key );
+                                    ?>
+                                    <li class="mini-cart-item">
+                                        <div class="cart-item-image">
+                                            <?php echo $thumbnail; ?>
+                                        </div>
+                                        <div class="cart-item-details">
+                                            <a href="<?php echo esc_url( $_product->get_permalink( $cart_item ) ); ?>">
+                                                <?php echo $product_name; ?>
+                                            </a>
+                                            <span class="quantity"><?php echo sprintf( '%s × %s', $cart_item['quantity'], $product_price ); ?></span>
+                                        </div>
+                                    </li>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </ul>
+                        <p class="total"><strong><?php _e( 'Subtotal', 'your-theme-text-domain' ); ?>:</strong> <?php echo WC()->cart->get_cart_subtotal(); ?></p>
+                        <p class="buttons">
+                            <a href="<?php echo wc_get_cart_url(); ?>" class="button wc-forward"><?php _e( 'View Cart', 'your-theme-text-domain' ); ?></a>
+                            <a href="<?php echo wc_get_checkout_url(); ?>" class="button checkout wc-forward"><?php _e( 'Checkout', 'your-theme-text-domain' ); ?></a>
+                        </p>
+                    <?php else : ?>
+                        <p class="empty"><?php _e( 'No products in the cart.', 'your-theme-text-domain' ); ?></p>
+                    <?php endif; ?>
+                </div>
+                <style>
+                    .header-cart .cart-dropdown {
+                        display: none;
+                        position: absolute;
+                        top: 100%;
+                        right: 0;
+                        background: #fff;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        width: 300px;
+                        padding: 10px;
+                        z-index: 9999;
+                    }
 
+                    .header-cart .cart-toggle.toggle + .cart-modal .cart-dropdown {
+                        display: block;
+                    }
+
+                    .header-cart .mini-cart-item {
+                        display: flex;
+                        margin-bottom: 10px;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #eee;
+                    }
+
+                    .header-cart .mini-cart-item .cart-item-image img {
+                        max-width: 50px;
+                        max-height: 50px;
+                        margin-right: 10px;
+                    }
+
+                    .header-cart .mini-cart-item .cart-item-details {
+                        flex: 1;
+                    }
+
+                    .header-cart .mini-cart-item .cart-item-details a {
+                        font-size: 14px;
+                        font-weight: bold;
+                        color: #333;
+                        text-decoration: none;
+                    }
+
+                    .header-cart .mini-cart-item .cart-item-details .quantity {
+                        display: block;
+                        font-size: 12px;
+                        color: #777;
+                    }
+
+                    .header-cart .total {
+                        font-size: 16px;
+                        font-weight: bold;
+                        margin-top: 10px;
+                    }
+
+                    .header-cart .buttons {
+                        margin-top: 10px;
+                        text-align: center;
+                    }
+
+                    .header-cart .buttons .button {
+                        display: inline-block;
+                        background: #0073aa;
+                        color: #fff;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        margin: 5px 0;
+                        border-radius: 5px;
+                    }
+
+                    .header-cart .buttons .button:hover {
+                        background: #005f8d;
+                    }
+                </style>
 			</div><!-- .cart-modal -->
 
 		</div><!-- .header-cart -->
